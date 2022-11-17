@@ -20,6 +20,7 @@ from ask.views import index
 urlpatterns = [
     path('', index),
     path('login/', index),
+    path('signup/', index),
     path('question/',include('qa.urls')),
     path('ask/', index),
     path('popular/', index),
