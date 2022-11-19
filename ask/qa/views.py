@@ -15,7 +15,7 @@ def question(request, id):
     except Question.DoesNotExist:
         raise Http404
     try:
-        answers = Answer.objects.get(question=post)
+        answers = Answer.objects.filter(question=post)[:]
     except Answer.DoesNotExist:
         answers = None
 
