@@ -1,0 +1,8 @@
+{% extends 'layout/layout.html' %}
+{% block body %}
+   <form method='post' action='/question/new/'>
+      <input type='text' placeholder = 'title' name = 'title'/>
+      <textarea name='text'></textarea>
+      <button type='submit'>Отправить</button>
+   </form>
+{% endblock body %}

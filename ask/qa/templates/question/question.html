@@ -1,0 +1,14 @@
+{% extends 'layout/layout.html' %}
+{% block body %}
+   <h1>Вопрос</h1>
+   <h2>{{question.title}}</h2>
+   <p>{{question.text}}</p>
+   <h2>Ответы</h2>
+   {% if answers %}
+      {% for answer in answers %}
+         <p>{{answer.text}}</p>
+      {% endfor %}
+   {% else %}
+      <p>Нет ответов</p>
+   {% endif %}
+{% endblock body %}
