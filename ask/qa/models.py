@@ -15,14 +15,14 @@ class Question(models.Model):
    rating = models.IntegerField(default=0)
    author = models.ForeignKey(User,null=True,on_delete=models.SET_NULL)
    likes = models.ManyToManyField(User,related_name='question_like_user')
-   questions = QuestionManager()
+   objects = QuestionManager()
 
 
 class Answer(models.Model):
    text = models.TextField()
    added_at = models.DateField(auto_now_add=True)
-   questions = models.OneToOneField(Question, null=True, on_delete=models.SET_NULL)
-   author = models.CharField(max_length=250)
+   question = models.OneToOneField(Question, null=True, on_delete=models.SET_NULL)
+   author = models.ForeignKey(User,null=True,on_delete=models.SET_NULL)
 
    class Meta:
       ordering = ['-added_at']
