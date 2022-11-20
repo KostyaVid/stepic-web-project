@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from ask.views import index
 from qa.views import mainPage
-from qa.views import newQuestion
+from qa.views import ask
 from qa.views import popular
 
 urlpatterns = [
@@ -25,7 +25,6 @@ urlpatterns = [
     path('login/', index),
     path('signup/', index),
     path('question/',include('qa.urls')),
-    path('ask/', index),
-    path('popular/', popular, name = 'popular'),
-    path('new/', newQuestion)
+    path('ask/', ask, name = 'ask'),
+    path('popular/', popular, name = 'popular')
 ]

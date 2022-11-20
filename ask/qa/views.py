@@ -2,41 +2,54 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest
 from django.http import Http404
 from django.http import HttpResponseRedirect
-from django.views.decorators.http import require_POST,require_GET
+from django.views.decorators.http import require_GET
 from django.core.paginator import Paginator
 from django.urls import reverse
 from qa.models import Question
 from qa.models import Answer
+from qa.forms import AskForm, AnswerForm
 
-require_GET
 def question(request, id):
-    try:
-        post = Question.objects.get(id=id)
-    except Question.DoesNotExist:
-        raise Http404
-    try:
-        answers = Answer.objects.filter(question=post)[:]
-    except Answer.DoesNotExist:
-        answers = None
+    if request.method == 'POST':
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            url = request.path
+        return HttpResponseRedirect(url)
+    else:
+        try:
+            post = Question.objects.get(id=id)
+        except Question.DoesNotExist:
+            raise Http404
+        form = AnswerForm()
+        try:
+            answers = Answer.objects.filter(question=post)[:]
+        except Answer.DoesNotExist:
+            answers = None
 
-    return render(request, 'question/question.html', {
-        'question': post,
-        'answers': answers
+        return render(request, 'question/question.html', {
+            'question': post,
+            'answers': answers,
+            'form': form
+        })
+
+
+
+def ask(request):
+    if request.method == 'POST':
+        form = AskForm(request.POST)
+        if form.is_valid():
+            question = form.save()
+            url = question.get_url()
+            return HttpResponseRedirect(url)
+
+    else:
+        form = AskForm()
+    return render(request, 'ask/ask.html',{
+        'form': form
     })
 
-
-require_GET
-def newQuestion(request):
-    return render(request, 'new/new.html')
-
-
-@require_POST
-def createQuestion(request):
-    post = request.POST
-    Question.objects.create(title = post.get('title'),text = post.get('text'))
-    return HttpResponseRedirect('/')
-
-require_GET
+@require_GET
 def mainPage(request):
     limit = 10
     try:
