@@ -15,23 +15,25 @@ def question(request, id):
         if form.is_valid():
             form.save()
             url = request.path
-        return HttpResponseRedirect(url)
+            return HttpResponseRedirect(url)        
     else:
-        try:
-            post = Question.objects.get(id=id)
-        except Question.DoesNotExist:
-            raise Http404
         form = AnswerForm()
-        try:
-            answers = Answer.objects.filter(question=post)[:]
-        except Answer.DoesNotExist:
-            answers = None
+        
+    try:
+        post = Question.objects.get(id=id)
+    except Question.DoesNotExist:
+        raise Http404
 
-        return render(request, 'question/question.html', {
-            'question': post,
-            'answers': answers,
-            'form': form
-        })
+    try:
+        answers = Answer.objects.filter(question=post)[:]
+    except Answer.DoesNotExist:
+        answers = None
+
+    return render(request, 'question/question.html', {
+        'question': post,
+        'answers': answers,
+        'form': form
+    })
 
 
 
