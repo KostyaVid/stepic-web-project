@@ -8,8 +8,7 @@ class CreateUser(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput,min_length=3, max_length=20)
 
     def save(self):
-        user = User.objects.create_user(self.cleaned_data['username'], self.cleaned_data['email'], self.cleaned_data['password'])
-        user.save()
+        user = User.objects.create_user(self.cleaned_data.get('username'), self.cleaned_data.get('email'), self.cleaned_data.get('password'))
         return user
 
 
