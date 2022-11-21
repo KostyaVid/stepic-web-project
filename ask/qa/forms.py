@@ -1,5 +1,25 @@
 from django import forms
+from django.contrib.auth.models import User
 from qa.models import Question, Answer
+
+class CreateUser(forms.Form):
+    username = forms.CharField(max_length=30, min_length=3)
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput,min_length=3, max_length=20)
+
+    def save(self):
+        user = User.objects.create_user(self.cleaned_data['username'], self.cleaned_data['email'], self.cleaned_data['password'])
+        user.save()
+        return user
+
+
+
+class LoginUser(forms.Form):
+    username = forms.CharField(max_length=30, min_length=3)
+    password = forms.CharField(widget=forms.PasswordInput,min_length=3, max_length=20)
+
+
+
 
 class AskForm(forms.Form):
     title = forms.CharField(max_length=100)
@@ -9,10 +29,6 @@ class AskForm(forms.Form):
     text.label = 'Текст вопроса'
     title.widget.attrs.update({'class': 'form-control'})
     text.widget.attrs.update({'class': 'form-control'})
-
-    # def __init__(self, user, **kwargs):
-    #     self._user = user
-    #     super(AskForm, self).__init__(**kwargs)
 
     def clean_title(self):
         data = self.cleaned_data["title"]
@@ -30,8 +46,8 @@ class AskForm(forms.Form):
     
 
     def save(self):
-        # if self._user:
-        #     self.cleaned_data['author'] = self._user
+        if self._user:
+            self.cleaned_data['author'] = self._user
         question = Question(**self.cleaned_data)
         question.save()
         return question
@@ -44,10 +60,6 @@ class AnswerForm(forms.Form):
     question = forms.IntegerField(min_value=0)
     text.label = 'Текст ответа'
     text.widget.attrs.update({'class': 'form-control'})
-
-    # def __init__(self, *args, **kwargs):
-    #     self._user = user
-    #     super(AskForm, self).__init__( *args,**kwargs)
 
     def clean_text(self):
         data = self.cleaned_data["text"]
@@ -65,9 +77,9 @@ class AnswerForm(forms.Form):
     
 
     def save(self):
-        # if self._user:
-        #     self.cleaned_data['author'] = self._user
+        if self._user:
+            self.cleaned_data['author'] = self._user
         quest = Question.objects.get(id = self.cleaned_data['question'])
-        answer = Answer(text = self.cleaned_data['text'], question = quest )
+        answer = Answer(text = self.cleaned_data['text'], question = quest, author = self.cleaned_data['author'] )
         answer.save()
         return answer

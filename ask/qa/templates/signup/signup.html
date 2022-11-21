@@ -1,0 +1,14 @@
+{% extends 'layout/layout.html' %}
+{% block body %}
+   <h1 class='mt-5'>Создание пользователя</h1>
+   <form class='form-group mt-4' method='post' action='/signup/'>
+      {% csrf_token %}
+      {% for field in form %}
+         <div class="form-group {% if field.errors %}alert alert-danger{% endif %}">
+         {{field.label_tag}}
+         {{field}}
+         </div>
+      {% endfor %}
+      <button type='submit' class='btn btn-primary mt-4'>Зарегестироваться</button>
+   </form>
+{% endblock body %}

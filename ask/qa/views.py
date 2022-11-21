@@ -2,17 +2,21 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest
 from django.http import Http404
 from django.http import HttpResponseRedirect
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout, get_user
 from django.urls import reverse
 from qa.models import Question
 from qa.models import Answer
-from qa.forms import AskForm, AnswerForm
+from qa.forms import AskForm, AnswerForm, CreateUser, LoginUser
 
 def question(request, id):
     if request.method == 'POST':
-        form = AnswerForm(request.POST)
+        user = get_user(request)
+        form = AnswerForm( request.POST)
         if form.is_valid():
+            form._user = user
             form.save()
             url = request.path
             return HttpResponseRedirect(url)        
@@ -39,8 +43,10 @@ def question(request, id):
 
 def ask(request):
     if request.method == 'POST':
+        user = get_user(request)
         form = AskForm(request.POST)
         if form.is_valid():
+            form._user = user
             question = form.save()
             url = question.get_url()
             return HttpResponseRedirect(url)
@@ -69,7 +75,7 @@ def mainPage(request):
     })
 
 
-require_GET
+@require_GET
 def popular(request):
     limit = 10
     try:
@@ -85,3 +91,50 @@ def popular(request):
         'page': page,
         'paginator': paginator
     })
+
+
+def signup(request):
+    if request.method == 'GET':
+        form = CreateUser()
+        return render(request, 'signup/signup.html',{
+            'form':form
+        })
+    form = CreateUser(request.POST)
+    if form.is_valid():
+        user = form.save()
+        login(request, user)
+        return HttpResponseRedirect('/')
+
+    return render(request, 'signup/signup.html',{
+            'form':form
+        })
+
+
+def loginPage(request):
+    if request.method == 'GET':
+        form = LoginUser()
+        return render(request, 'login/login.html',{
+            'form':form
+        })
+    form = LoginUser(request.POST)
+    if form.is_valid():
+        user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+        if user is not None:
+            login(request, user)        
+            return HttpResponseRedirect('/')
+        else:
+            err = u'Неправильный логин или пароль'
+            return render(request, 'login/login.html',{
+                'form':form,
+                'err':err
+            })
+
+
+    return render(request, 'login/login.html',{
+            'form':form
+        })
+
+@require_POST
+def LogoutPage(request):
+    logout(request)
+    return HttpResponseRedirect('/login/')

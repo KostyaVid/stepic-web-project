@@ -19,6 +19,7 @@
       {% if answers %}
          {% for answer in answers %}
             <p>{{answer.text}}</p>
+            {% if  answer.author%}<p>{{answer.author}}</p>{% endif %}
          {% endfor %}
       {% else %}
          <p>Нет ответов</p>

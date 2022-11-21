@@ -18,12 +18,13 @@ from django.urls import path, include
 from ask.views import index
 from qa.views import mainPage
 from qa.views import ask
-from qa.views import popular
+from qa.views import popular, signup, loginPage, LogoutPage
 
 urlpatterns = [
     path('', mainPage),
-    path('login/', index),
-    path('signup/', index),
+    path('login/', loginPage),
+    path('logout/', LogoutPage),
+    path('signup/', signup),
     path('question/',include('qa.urls')),
     path('ask/', ask, name = 'ask'),
     path('popular/', popular, name = 'popular')
